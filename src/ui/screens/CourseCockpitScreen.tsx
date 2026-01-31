@@ -1,6 +1,7 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { default as React, default as React, useEffect, useState } from "react";
 import {
+    Button,
     FlatList,
     KeyboardAvoidingView,
     Platform,
@@ -12,8 +13,154 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppStore } from "../../store/useAppStore";
+import { useCourseStore } from "../../store/useCourseStore";
 import { CPCard } from "../components/CPCard";
 import { CPHeader } from "../components/CPHeader";
+
+const PRIMARY = "#4338CA";
+const BG = "#F8FAFC";
+
+export default function CourseCockpitScreen() {
+  const { courseId } = useLocalSearchParams<{ courseId?: string }>();
+
+  const course = useCourseStore(
+    (s) => s.courses.find((c) => c.id === String(courseId || "")) || null,
+  );
+  const updateCourse = useCourseStore((s) => s.updateCourse);
+  const addUnit = useCourseStore((s) => s.addUnit);
+  const updateUnit = useCourseStore((s) => s.updateUnit);
+
+  if (!course) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.header}>Course not found</Text>
+        <Text style={styles.subtle}>Ensure a valid courseId is provided.</Text>
+      </View>
+    );
+  }
+
+  const handleDescriptionChange = (text: string) => {
+    updateCourse(course.id, { description: text });
+  };
+
+  const handleAddUnit = () => {
+    const id = Date.now().toString();
+    addUnit(course.id, { id, title: "New Unit", materials: [], concepts: [] });
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>{course.title}</Text>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>Description</Text>
+        <TextInput
+          style={[styles.input, styles.multiline]}
+          multiline
+          placeholder="Describe this course..."
+          value={course.description || ""}
+          onChangeText={handleDescriptionChange}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.label}>Units</Text>
+        <FlatList
+          data={course.units}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContent}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+          renderItem={({ item }) => (
+            <View style={styles.unitCard}>
+              <TextInput
+                style={styles.input}
+                placeholder="Unit title"
+                value={item.title}
+                onChangeText={(text) =>
+                  updateUnit(course.id, item.id, { title: text })
+                }
+              />
+              <View style={styles.unitActions}>
+                <Button
+                  title="+ Add Material"
+                  color={PRIMARY}
+                  onPress={() => {
+                    // Mocked for now
+                    console.log("Add material to unit", item.id);
+                  }}
+                />
+              </View>
+            </View>
+          )}
+        />
+      </View>
+
+      <View style={styles.footer}>
+        <Button title="+ Add Unit" color={PRIMARY} onPress={handleAddUnit} />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: BG,
+    paddingHorizontal: 16,
+    paddingTop: 24,
+  },
+  header: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: PRIMARY,
+    marginBottom: 12,
+  },
+  subtle: {
+    color: "#64748B",
+  },
+  section: {
+    marginTop: 16,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#0F172A",
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#E2E8F0",
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: "#0F172A",
+  },
+  multiline: {
+    minHeight: 96,
+    textAlignVertical: "top",
+  },
+  listContent: {
+    paddingVertical: 8,
+  },
+  separator: {
+    height: 12,
+  },
+  unitCard: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "#E2E8F0",
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 12,
+  },
+  unitActions: {
+    marginTop: 8,
+  },
+  footer: {
+    marginTop: 24,
+  },
+});
 
 export default function CourseCockpitScreen() {
   const router = useRouter();
