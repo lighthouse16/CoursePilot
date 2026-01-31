@@ -1,21 +1,7 @@
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { default as React, default as React, useEffect, useState } from "react";
-import {
-    Button,
-    FlatList,
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useAppStore } from "../../store/useAppStore";
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, FlatList, StyleSheet } from "react-native";
+import { useLocalSearchParams } from "expo-router";
 import { useCourseStore } from "../../store/useCourseStore";
-import { CPCard } from "../components/CPCard";
-import { CPHeader } from "../components/CPHeader";
 
 const PRIMARY = "#4338CA";
 const BG = "#F8FAFC";
@@ -23,8 +9,8 @@ const BG = "#F8FAFC";
 export default function CourseCockpitScreen() {
   const { courseId } = useLocalSearchParams<{ courseId?: string }>();
 
-  const course = useCourseStore(
-    (s) => s.courses.find((c) => c.id === String(courseId || "")) || null,
+  const course = useCourseStore((s) =>
+    s.courses.find((c) => c.id === String(courseId || "")) || null,
   );
   const updateCourse = useCourseStore((s) => s.updateCourse);
   const addUnit = useCourseStore((s) => s.addUnit);
@@ -161,166 +147,6 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
 });
-
-export default function CourseCockpitScreen() {
-  const router = useRouter();
-  const { courseId } = useLocalSearchParams();
-
-  const courseById = useAppStore((state) => state.courseById);
-  const unitsForCourse = useAppStore((state) => state.unitsForCourse);
-  const updateCourse = useAppStore((state) => state.updateCourse);
-  const updateUnit = useAppStore((state) => state.updateUnit);
-  const addUnit = useAppStore((state) => state.addUnit);
-
-  const course = courseById(courseId as string);
-  const units = unitsForCourse(courseId as string);
-
-  const [description, setDescription] = useState(course?.description || "");
-  const [editingUnitId, setEditingUnitId] = useState<string | null>(null);
-  const [unitTitles, setUnitTitles] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    if (course?.description) {
-      setDescription(course.description);
-    }
-  }, [course?.description]);
-
-  useEffect(() => {
-    const titles: Record<string, string> = {};
-    units.forEach((unit) => {
-      titles[unit.id] = unit.title;
-    });
-    setUnitTitles(titles);
-  }, [units]);
-
-  if (!course) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <CPHeader subtitle="Course not found" />
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Course not found</Text>
-          <Pressable style={styles.backButton} onPress={() => router.back()}>
-            <Text style={styles.backButtonText}>Go Back</Text>
-          </Pressable>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  const handleDescriptionBlur = () => {
-    if (description !== course.description) {
-      updateCourse(course.id, { description });
-    }
-  };
-
-  const handleUnitTitleChange = (unitId: string, newTitle: string) => {
-    setUnitTitles((prev) => ({ ...prev, [unitId]: newTitle }));
-  };
-
-  const handleUnitTitleBlur = (unitId: string) => {
-    const newTitle = unitTitles[unitId];
-    const unit = units.find((u) => u.id === unitId);
-    if (unit && newTitle && newTitle !== unit.title) {
-      updateUnit(unitId, { title: newTitle });
-    }
-    setEditingUnitId(null);
-  };
-
-  const handleAddUnit = () => {
-    const nextWeek = units.length + 1;
-    addUnit(course.id, `Week ${nextWeek}`);
-  };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <CPHeader subtitle="Course cockpit" />
-      <KeyboardAvoidingView
-        style={styles.keyboardAvoid}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View style={styles.content}>
-          <CPCard style={styles.courseCard}>
-            <View style={styles.courseHeader}>
-              <View
-                style={[styles.colorDot, { backgroundColor: course.color }]}
-              />
-              <View style={styles.courseInfo}>
-                <Text style={styles.courseCode}>{course.code}</Text>
-                <Text style={styles.courseTitle}>{course.title}</Text>
-              </View>
-            </View>
-
-            <Text style={styles.label}>Description</Text>
-            <TextInput
-              style={styles.descriptionInput}
-              value={description}
-              onChangeText={setDescription}
-              onBlur={handleDescriptionBlur}
-              placeholder="Add a course description..."
-              placeholderTextColor="#94A3B8"
-              multiline
-              numberOfLines={3}
-            />
-          </CPCard>
-
-          <View style={styles.unitsHeader}>
-            <Text style={styles.sectionTitle}>Units</Text>
-            <Text style={styles.unitCount}>{units.length}</Text>
-          </View>
-
-          <FlatList
-            data={units}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <CPCard style={styles.unitCard}>
-                <View style={styles.unitRow}>
-                  <View style={styles.weekBadge}>
-                    <Text style={styles.weekText}>
-                      W{item.weekNumber || "?"}
-                    </Text>
-                  </View>
-
-                  {editingUnitId === item.id ? (
-                    <TextInput
-                      style={styles.unitTitleInput}
-                      value={unitTitles[item.id] || ""}
-                      onChangeText={(text) =>
-                        handleUnitTitleChange(item.id, text)
-                      }
-                      onBlur={() => handleUnitTitleBlur(item.id)}
-                      autoFocus
-                    />
-                  ) : (
-                    <Pressable
-                      style={styles.unitTitleContainer}
-                      onPress={() => setEditingUnitId(item.id)}
-                    >
-                      <Text style={styles.unitTitle}>{item.title}</Text>
-                      <Text style={styles.tapHint}>Tap to edit</Text>
-                    </Pressable>
-                  )}
-                </View>
-              </CPCard>
-            )}
-            ListEmptyComponent={
-              <CPCard style={styles.emptyCard}>
-                <Text style={styles.emptyText}>
-                  No units yet. Add your first one below.
-                </Text>
-              </CPCard>
-            }
-            ListFooterComponent={
-              <Pressable style={styles.addButton} onPress={handleAddUnit}>
-                <Text style={styles.addButtonText}>+ Add Unit</Text>
-              </Pressable>
-            }
-            contentContainerStyle={styles.listContent}
-          />
-        </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
-  );
-}
 
 const styles = StyleSheet.create({
   container: {
