@@ -1,6 +1,13 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import React from "react";
+import {
+    Button,
+    FlatList,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+} from "react-native";
 import { useCourseStore } from "../../store/useCourseStore";
 
 const PRIMARY = "#4338CA";
@@ -9,8 +16,8 @@ const BG = "#F8FAFC";
 export default function CourseCockpitScreen() {
   const { courseId } = useLocalSearchParams<{ courseId?: string }>();
 
-  const course = useCourseStore((s) =>
-    s.courses.find((c) => c.id === String(courseId || "")) || null,
+  const course = useCourseStore(
+    (s) => s.courses.find((c) => c.id === String(courseId || "")) || null,
   );
   const updateCourse = useCourseStore((s) => s.updateCourse);
   const addUnit = useCourseStore((s) => s.addUnit);
