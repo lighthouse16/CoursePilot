@@ -14,7 +14,6 @@ export default function CoursesScreen() {
   const courses = useAppStore((state) => state.courses);
   const units = useAppStore((state) => state.units);
   const reviewItems = useAppStore((state) => state.reviewItems);
-  const addCourse = useAppStore((state) => state.addCourse);
 
   const currentTerm = terms[0];
   const termCourses = courses.filter((c) => c.termId === currentTerm?.id);

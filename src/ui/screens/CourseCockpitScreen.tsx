@@ -14,7 +14,10 @@ const PRIMARY = "#4338CA";
 const BG = "#F8FAFC";
 
 export default function CourseCockpitScreen() {
-  const { courseId, rename } = useLocalSearchParams<{ courseId?: string; rename?: string }>();
+  const { courseId, rename } = useLocalSearchParams<{
+    courseId?: string;
+    rename?: string;
+  }>();
 
   const course = useCourseStore(
     (s) => s.courses.find((c) => c.id === String(courseId || "")) || null,
@@ -65,7 +68,11 @@ export default function CourseCockpitScreen() {
             placeholderTextColor="#94A3B8"
           />
           <View style={styles.renameActions}>
-            <Button title="Save name" color={PRIMARY} onPress={handleSaveRename} />
+            <Button
+              title="Save name"
+              color={PRIMARY}
+              onPress={handleSaveRename}
+            />
           </View>
         </View>
       )}

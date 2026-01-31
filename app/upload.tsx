@@ -60,7 +60,7 @@ export default function UploadScreen() {
         </CPCard>
 
         <CPCard style={styles.infoCard}>
-          <Text style={styles.infoTitle}>What we'll generate</Text>
+          <Text style={styles.infoTitle}>What we&apos;ll generate</Text>
           <View style={styles.featureList}>
             <FeatureItem
               icon="document-text-outline"

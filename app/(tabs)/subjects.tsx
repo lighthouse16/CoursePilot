@@ -2,40 +2,29 @@ import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { theme } from "../../constants/theme";
-import { useAppStore } from "../../src/store/useAppStore";
+import { useCourseStore } from "../../src/store/useCourseStore";
 import { CPButton } from "../../src/ui/components/CPButton";
 import { CPCard } from "../../src/ui/components/CPCard";
 import { CPHeader } from "../../src/ui/components/CPHeader";
 
 export default function SubjectsScreen() {
   const router = useRouter();
-  const courses = useAppStore((state) => state.courses);
-  const terms = useAppStore((state) => state.terms);
+  const courses = useCourseStore((state) => state.courses);
+  const addCourse = useCourseStore((state) => state.addCourse);
 
   const handleAddSubject = () => {
     const courseNumber = courses.length + 1;
-    const termId = terms.length > 0 ? terms[0].id : "term-default";
+    const newCourseId = Date.now().toString();
 
-    // Create course with default name using the addCourse action
-    const newCourse = {
+    addCourse({
+      id: newCourseId,
       code: `COURSE${courseNumber}`,
       title: `New Course ${courseNumber}`,
-      termId,
-    };
+      description: "",
+      units: [],
+    });
 
-    // Use the store's addCourse action which handles persistence
-    const addCourse = useAppStore.getState().addCourse;
-    addCourse(newCourse);
-
-    // Get the most recently added course (the one we just created)
-    // Since addCourse uses Date.now(), we need to get the latest course
-    setTimeout(() => {
-      const updatedCourses = useAppStore.getState().courses;
-      const latestCourse = updatedCourses[updatedCourses.length - 1];
-      if (latestCourse) {
-        router.push(`/subject/${latestCourse.id}?edit=true`);
-      }
-    }, 100);
+    router.push(`/course/${newCourseId}?rename=true`);
   };
 
   return (
@@ -45,13 +34,16 @@ export default function SubjectsScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
-        <CPButton title="Create course" onPress={() => router.push("/CreateCourseScreen")} />
+        <CPButton
+          title="Create course"
+          onPress={() => router.push("/CreateCourseScreen")}
+        />
         <CPButton title="Add course" onPress={handleAddSubject} />
 
         {courses.map((course) => (
           <Pressable
             key={course.id}
-            onPress={() => router.push(`/subject/${course.id}`)}
+            onPress={() => router.push(`/course/${course.id}`)}
           >
             <CPCard style={styles.subjectCard}>
               <View style={styles.subjectHeader}>

@@ -66,7 +66,15 @@ export function AnimatedSplash({ onComplete }: AnimatedSplashProps) {
         },
       ),
     );
-  }, []);
+  }, [
+    backgroundOpacity,
+    logoOpacity,
+    logoRotate,
+    logoScale,
+    onComplete,
+    textOpacity,
+    textTranslateY,
+  ]);
 
   const logoAnimatedStyle = useAnimatedStyle(() => ({
     transform: [

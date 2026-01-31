@@ -24,7 +24,6 @@ interface UnitInput {
 
 export default function CreateCourseScreen() {
   const router = useRouter();
-  const addCourse = useAppStore((state) => state.addCourse);
   const addUnit = useAppStore((state) => state.addUnit);
   const terms = useAppStore((state) => state.terms);
 
@@ -51,6 +50,7 @@ export default function CreateCourseScreen() {
 
       Alert.alert("Success", "Syllabus parsed successfully!");
     } catch (error) {
+      console.error(error);
       Alert.alert("Error", "Failed to parse syllabus");
     } finally {
       setLoading(false);

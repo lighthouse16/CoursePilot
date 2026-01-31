@@ -5,10 +5,10 @@
 
 export interface ParsedSyllabus {
   description: string;
-  units: Array<{
+  units: {
     title: string;
     weekNumber?: number;
-  }>;
+  }[];
 }
 
 /**
