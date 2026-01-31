@@ -1,50 +1,88 @@
-# Welcome to your Expo app 👋
+# CoursePilot 🎓
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A course-first study companion built with Expo and React Native. CoursePilot helps you organize your courses, materials, and study sessions with intelligent spaced repetition.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **Course Management**: Organize courses by terms and units
+- **Material Tracking**: Upload and track PDFs, slides, notes, and links
+- **Intelligent Study System**: Spaced repetition with SRS algorithm
+- **Mistake-Driven Review**: Focus on concepts you're struggling with
+- **Progress Tracking**: See your mastery levels and study streaks
+- **Cloud Sync** (Optional): Back up your data with Firebase
+- **Offline-First**: Works without internet, syncs when online
+
+## Get Started
+
+1. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+2. **Start the app**
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+3. **(Optional) Set up Firebase for cloud sync**
+
+   See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for detailed instructions.
+
+In the output, you'll find options to open the app in:
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
 - [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [Expo Go](https://expo.dev/go)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Project Structure
 
-## Get a fresh project
+```
+app/                    # Expo Router screens
+├── (tabs)/            # Tab navigation
+│   ├── index.tsx      # Today's mission
+│   ├── courses.tsx    # Course list
+│   └── settings.tsx   # Settings
+├── auth/              # Authentication
+│   └── sign-in.tsx    # Sign in screen
+├── course/            # Course details
+├── unit/              # Unit details
+└── study/             # Study session
 
-When you're ready, run:
+src/
+├── config/            # Firebase configuration
+├── data/              # Data layer (storage, seed)
+├── services/          # Firebase services (auth, sync)
+├── store/             # Zustand state management
+├── types/             # TypeScript types
+└── ui/                # Reusable UI components
 
-```bash
-npm run reset-project
+constants/             # Theme and constants
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Tech Stack
 
-## Learn more
+- **Framework**: Expo Router (React Native)
+- **State Management**: Zustand
+- **Local Storage**: AsyncStorage
+- **Cloud Sync**: Firebase (optional)
+- **Language**: TypeScript
 
-To learn more about developing your project with Expo, look at the following resources:
+## Firebase Setup (Optional)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Firebase enables cloud backup and multi-device sync. Follow these steps:
 
-## Join the community
+1. Create a Firebase project at [console.firebase.google.com](https://console.firebase.google.com)
+2. Enable Email/Password authentication
+3. Create a Firestore database
+4. Copy your config to `src/config/firebase.ts`
 
-Join our community of developers creating universal apps.
+See [FIREBASE_SETUP.md](./FIREBASE_SETUP.md) for complete instructions.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Learn More
+
+- [Expo documentation](https://docs.expo.dev/)
+- [Expo Router](https://docs.expo.dev/router/introduction/)
+- [Firebase Documentation](https://firebase.google.com/docs)

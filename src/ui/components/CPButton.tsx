@@ -1,5 +1,12 @@
 import React from "react";
-import { ActivityIndicator, Pressable, StyleSheet, Text } from "react-native";
+import {
+    ActivityIndicator,
+    Pressable,
+    StyleProp,
+    StyleSheet,
+    Text,
+    ViewStyle,
+} from "react-native";
 import { theme } from "../../../constants/theme";
 
 interface CPButtonProps {
@@ -8,6 +15,7 @@ interface CPButtonProps {
   variant?: "primary" | "secondary";
   disabled?: boolean;
   loading?: boolean;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function CPButton({
@@ -16,6 +24,7 @@ export function CPButton({
   variant = "primary",
   disabled = false,
   loading = false,
+  style,
 }: CPButtonProps) {
   const isPrimary = variant === "primary";
 
@@ -28,6 +37,7 @@ export function CPButton({
         isPrimary ? styles.primary : styles.secondary,
         (disabled || loading) && styles.disabled,
         pressed && styles.pressed,
+        style,
       ]}
     >
       {loading ? (

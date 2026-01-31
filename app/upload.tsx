@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import React from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { theme } from "../constants/theme";
 import { useSubjectsStore } from "../src/store/useSubjectsStore";
 import { CPButton } from "../src/ui/components/CPButton";
 import { CPCard } from "../src/ui/components/CPCard";
+import { CPHeader } from "../src/ui/components/CPHeader";
 
 export default function UploadScreen() {
   const { subjectId } = useLocalSearchParams<{ subjectId?: string }>();
@@ -15,9 +16,10 @@ export default function UploadScreen() {
     : null;
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.container}>
+      <CPHeader subtitle="Add learning material" />
       <ScrollView
-        style={styles.container}
+        style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
         {preselectedSubject && (
@@ -72,7 +74,7 @@ export default function UploadScreen() {
           </View>
         </CPCard>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -86,11 +88,11 @@ function FeatureItem({ icon, text }: { icon: any; text: string }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: theme.colors.bg,
   },
-  container: {
+  scrollView: {
     flex: 1,
   },
   content: {

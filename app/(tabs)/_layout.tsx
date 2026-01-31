@@ -2,36 +2,37 @@ import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 import { theme } from "../../constants/theme";
 
-export default function TabsLayout() {
+export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        headerShown: false,
         tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.colors.subtext,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
         tabBarStyle: {
-          height: 64,
-          paddingBottom: 8,
-          paddingTop: 8,
+          backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
+          borderTopWidth: 1,
+          elevation: 0,
+          shadowOpacity: 0,
         },
+        headerShown: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: "Today",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="today-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="rocket-outline" size={24} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="subjects"
+        name="courses"
         options={{
-          title: "Subjects",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="book-outline" size={size} color={color} />
+          title: "Courses",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="library-outline" size={24} color={color} />
           ),
         }}
       />
@@ -39,9 +40,21 @@ export default function TabsLayout() {
         name="settings"
         options={{
           title: "Settings",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings-outline" size={size} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="settings-outline" size={24} color={color} />
           ),
+        }}
+      />
+      <Tabs.Screen
+        name="explore"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="subjects"
+        options={{
+          href: null,
         }}
       />
     </Tabs>

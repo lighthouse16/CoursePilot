@@ -1,108 +1,95 @@
-import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
-import {
-    Alert,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    ScrollView,
-    StyleSheet,
-    Text,
-    View,
-} from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { theme } from "../../constants/theme";
-import { useSubjectsStore } from "../../src/store/useSubjectsStore";
+import { useAppStore } from "../../src/store/useAppStore";
+import { CPButton } from "../../src/ui/components/CPButton";
 import { CPCard } from "../../src/ui/components/CPCard";
+import { CPHeader } from "../../src/ui/components/CPHeader";
 
 export default function SubjectsScreen() {
   const router = useRouter();
-  const subjects = useSubjectsStore((state) => state.subjects);
-  const addSubject = useSubjectsStore((state) => state.addSubject);
+  const courses = useAppStore((state) => state.courses);
+  const terms = useAppStore((state) => state.terms);
 
   const handleAddSubject = () => {
-    if (Platform.OS === "ios") {
-      Alert.prompt("New Subject", "Enter subject name:", (name) => {
-        if (name && name.trim()) {
-          addSubject(name.trim());
-        }
-      });
-    } else {
-      // For Android/web, create a default subject
-      addSubject(`New Subject ${subjects.length + 1}`);
-    }
+    const courseNumber = courses.length + 1;
+    const termId = terms.length > 0 ? terms[0].id : "term-default";
+
+    // Create course with default name using the addCourse action
+    const newCourse = {
+      code: `COURSE${courseNumber}`,
+      title: `New Course ${courseNumber}`,
+      termId,
+    };
+
+    // Use the store's addCourse action which handles persistence
+    const addCourse = useAppStore.getState().addCourse;
+    addCourse(newCourse);
+
+    // Get the most recently added course (the one we just created)
+    // Since addCourse uses Date.now(), we need to get the latest course
+    setTimeout(() => {
+      const updatedCourses = useAppStore.getState().courses;
+      const latestCourse = updatedCourses[updatedCourses.length - 1];
+      if (latestCourse) {
+        router.push(`/subject/${latestCourse.id}?edit=true`);
+      }
+    }, 100);
   };
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.container}>
+      <CPHeader subtitle="Your course folders" />
       <ScrollView
-        style={styles.container}
+        style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
-        <View style={styles.headerRow}>
-          <Text style={styles.header}>Subjects</Text>
-          <Pressable onPress={handleAddSubject} style={styles.addButton}>
-            <Ionicons
-              name="add-circle"
-              size={32}
-              color={theme.colors.primary}
-            />
-          </Pressable>
-        </View>
+        <CPButton title="Add course" onPress={handleAddSubject} />
 
-        {subjects.map((subject) => (
+        {courses.map((course) => (
           <Pressable
-            key={subject.id}
-            onPress={() => router.push(`/subject/${subject.id}`)}
+            key={course.id}
+            onPress={() => router.push(`/subject/${course.id}`)}
           >
             <CPCard style={styles.subjectCard}>
               <View style={styles.subjectHeader}>
-                <Text style={styles.subjectName}>{subject.name}</Text>
-                <Text style={styles.masteryBadge}>{subject.mastery}%</Text>
+                <Text style={styles.subjectName}>{course.title}</Text>
+                <Text style={styles.courseCode}>{course.code}</Text>
               </View>
-              <Text style={styles.nextDue}>Next due: {subject.nextDue}</Text>
+              {course.description && (
+                <Text style={styles.courseDescription} numberOfLines={2}>
+                  {course.description}
+                </Text>
+              )}
             </CPCard>
           </Pressable>
         ))}
 
-        {subjects.length === 0 && (
+        {courses.length === 0 && (
           <View style={styles.emptyState}>
-            <Text style={styles.emptyText}>No subjects yet</Text>
+            <Text style={styles.emptyText}>No courses yet</Text>
             <Text style={styles.emptySubtext}>
-              Tap + to add your first subject
+              Tap + to add your first course
             </Text>
           </View>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  container: {
     flex: 1,
     backgroundColor: theme.colors.bg,
   },
-  container: {
+  scrollView: {
     flex: 1,
   },
   content: {
     padding: theme.spacing.lg,
     gap: theme.spacing.md,
-  },
-  headerRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: theme.spacing.sm,
-  },
-  header: {
-    fontSize: 32,
-    fontWeight: "700",
-    color: theme.colors.text,
-  },
-  addButton: {
-    padding: theme.spacing.xs,
   },
   subjectCard: {
     gap: theme.spacing.sm,
@@ -111,20 +98,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: theme.spacing.xs,
   },
   subjectName: {
     fontSize: 17,
     fontWeight: "600",
     color: theme.colors.text,
+    flex: 1,
   },
-  masteryBadge: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: theme.colors.success,
-  },
-  nextDue: {
+  courseCode: {
     fontSize: 14,
-    color: theme.colors.subtext,
+    fontWeight: "600",
+    color: theme.colors.primary,
+  },
+  courseDescription: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    lineHeight: 20,
   },
   emptyState: {
     alignItems: "center",
