@@ -45,6 +45,7 @@ export default function SubjectsScreen() {
         style={styles.scrollView}
         contentContainerStyle={styles.content}
       >
+        <CPButton title="Create course" onPress={() => router.push("/CreateCourseScreen")} />
         <CPButton title="Add course" onPress={handleAddSubject} />
 
         {courses.map((course) => (
